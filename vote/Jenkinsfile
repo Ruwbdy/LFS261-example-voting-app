@@ -1,16 +1,15 @@
 pipeline {
-    agent none
+    agent {
+        docker {
+            image 'python:3.11-slim'
+            args '--user root'
+        }
+    }
 
     stages {
         stage("build") {
             when {
                 changeset "**/vote/**"
-            }
-            agent {
-                docker {
-                    image 'python:3.11-slim'
-                    args '--user root'
-                }
             }
             steps {
                 echo 'Compiling vote app..'
@@ -24,12 +23,6 @@ pipeline {
             when {
                 changeset "**/vote/**"
             }
-            agent {
-                docker {
-                    image 'python:3.11-slim'
-                    args '--user root'
-                }
-            }
             steps {
                 echo 'Running Unit Tests on vote app.'
                 dir('vote') {
@@ -40,11 +33,11 @@ pipeline {
         }
 
         stage('docker-package') {
-            agent any
             when {
                 changeset "**/vote/**"
                 branch 'master'
             }
+            agent any
             steps {
                 echo 'Packaging vote app with docker'
                 script {
