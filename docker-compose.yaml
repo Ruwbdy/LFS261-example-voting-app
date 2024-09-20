@@ -8,6 +8,7 @@ networks:
 services:
   vote:
     image: ruwbdy/vote:latest
+    build: ./vote
     ports:
       - 5000:80
     depends_on:
@@ -19,7 +20,7 @@ services:
     image: redis:alpine
     networks:
       - instavote
-      
+
   db:
     image: postgres:15-alpine
     environment:
@@ -32,10 +33,12 @@ services:
       test: /healthchecks/postgres.sh
       interval: "5s"
     networks:
-      - instavote  
-      
+      - instavote
+
+
   result:
     image: ruwbdy/result:latest
+    build: ./result
     ports:
       - 5001:80
     depends_on:
@@ -45,6 +48,7 @@ services:
 
   worker:
     image: ruwbdy/worker:latest
+    build: ./worker
     depends_on:
       - redis
       - db
