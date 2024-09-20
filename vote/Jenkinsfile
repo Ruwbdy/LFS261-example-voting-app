@@ -8,7 +8,7 @@ pipeline {
             }
             agent {
                 docker {
-                    image 'python:3.11-slim'
+                    image 'python:2.7.16-slim'
                     args '--user root'
                 }
             }
@@ -26,7 +26,7 @@ pipeline {
             }
             agent {
                 docker {
-                    image 'python:3.11-slim'
+                    image 'python:2.7.16-slim'
                     args '--user root'
                 }
             }
@@ -61,7 +61,7 @@ pipeline {
 
     post {
         always {
-            echo 'Building multibranch pipeline for worker is completed..'
+            echo 'Building multibranch pipeline for vote is completed..'
         }
     }
 }
