@@ -3,7 +3,7 @@ pipeline {
   agent none
 
   stages {
-    
+
     stage('worker-build') {
       agent {
         docker {
@@ -12,9 +12,9 @@ pipeline {
         }
 
       }
-      when {
-        changeset '**/worker/**'
-      }
+      // when {
+      //   changeset '**/worker/**'
+      // }
       steps {
         echo 'Compiling worker app..'
         dir(path: 'worker') {
@@ -32,9 +32,9 @@ pipeline {
         }
 
       }
-      when {
-        changeset '**/worker/**'
-      }
+      // when {
+      //   changeset '**/worker/**'
+      // }
       steps {
         echo 'Running Unit Tets on worker app.'
         dir(path: 'worker') {
@@ -52,10 +52,10 @@ pipeline {
         }
 
       }
-      when {
-        branch 'master'
-        changeset '**/worker/**'
-      }
+      // when {
+      //   branch 'master'
+      //   changeset '**/worker/**'
+      // }
       steps {
         echo 'Packaging worker app'
         dir(path: 'worker') {
@@ -68,15 +68,15 @@ pipeline {
 
     stage('worker-docker-package') {
       agent any
-      when {
-        changeset '**/worker/**'
-        branch 'master'
-      }
+      // when {
+      //   changeset '**/worker/**'
+      //   branch 'master'
+      // }
       steps {
         echo 'Packaging worker app with docker'
         script {
           docker.withRegistry('https://index.docker.io/v1/', 'dockerlogin') {
-            def workerImage = docker.build("xxxxx/worker:v${env.BUILD_ID}", './worker')
+            def workerImage = docker.build("ruwbdy/worker:v${env.BUILD_ID}", './worker')
             workerImage.push()
             workerImage.push("${env.BRANCH_NAME}")
             workerImage.push('latest')
@@ -93,9 +93,9 @@ pipeline {
         }
 
       }
-      when {
-        changeset '**/result/**'
-      }
+      // when {
+      //   changeset '**/result/**'
+      // }
       steps {
         echo 'Compiling result app..'
         dir(path: 'result') {
@@ -112,9 +112,9 @@ pipeline {
         }
 
       }
-      when {
-        changeset '**/result/**'
-      }
+      // when {
+      //   changeset '**/result/**'
+      // }
       steps {
         echo 'Running Unit Tests on result app..'
         dir(path: 'result') {
@@ -127,15 +127,15 @@ pipeline {
 
     stage('result-docker-package') {
       agent any
-      when {
-        changeset '**/result/**'
-        branch 'master'
-      }
+      // when {
+      //   changeset '**/result/**'
+      //   branch 'master'
+      // }
       steps {
         echo 'Packaging result app with docker'
         script {
           docker.withRegistry('https://index.docker.io/v1/', 'dockerlogin') {
-            def resultImage = docker.build("xxxxx/result:v${env.BUILD_ID}", './result')
+            def resultImage = docker.build("ruwbdy/result:v${env.BUILD_ID}", './result')
             resultImage.push()
             resultImage.push("${env.BRANCH_NAME}")
             resultImage.push('latest')
@@ -152,9 +152,9 @@ pipeline {
         }
 
       }
-      when {
-        changeset '**/vote/**'
-      }
+      // when {
+      //   changeset '**/vote/**'
+      // }
       steps {
         echo 'Compiling vote app.'
         dir(path: 'vote') {
@@ -172,9 +172,9 @@ pipeline {
         }
 
       }
-      when {
-        changeset '**/vote/**'
-      }
+      // when {
+      //   changeset '**/vote/**'
+      // }
       steps {
         echo 'Running Unit Tests on vote app.'
         dir(path: 'vote') {
@@ -187,10 +187,10 @@ pipeline {
 
     stage('vote integration'){ 
     agent any 
-    when{ 
-      changeset "**/vote/**" 
-      branch 'master' 
-    } 
+    // when{ 
+    //   changeset "**/vote/**" 
+    //   branch 'master' 
+    // } 
     steps{ 
       echo 'Running Integration Tests on vote app' 
       dir('vote'){ 
@@ -202,16 +202,12 @@ pipeline {
 
     stage('vote-docker-package') {
       agent any
-      when {
-        changeset '**/vote/**'
-        branch 'master'
-      }
       steps {
         echo 'Packaging vote app with docker'
         script {
           docker.withRegistry('https://index.docker.io/v1/', 'dockerlogin') {
             // ./vote is the path to the Dockerfile that Jenkins will find from the Github repo
-            def voteImage = docker.build("xxxxx/vote:${env.GIT_COMMIT}", "./vote")
+            def voteImage = docker.build("ruwbdy/vote:${env.GIT_COMMIT}", "./vote")
             voteImage.push()
             voteImage.push("${env.BRANCH_NAME}")
             voteImage.push("latest")
@@ -220,23 +216,24 @@ pipeline {
 
       }
     }
-  stage('deploy to dev'){
-          agent any
-          when{
-            branch 'master'
-          }
-          steps{
-            echo 'Deploy instavote app with docker compose'
-            sh 'docker-compose up -d'
-          }
-      }
 
+
+    stage('deploy to dev') {
+      agent any
+      // when {
+      //   branch 'master'
+      // }
+      steps {
+        echo 'Deploy instavote app with docker compose'
+        sh 'docker compose up -d'
+      }
+    }
+   
   }
-  
   post {
     always {
       echo 'Building mono pipeline for voting app is completed.'
     }
+
   }
 }
-
