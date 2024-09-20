@@ -61,7 +61,7 @@ pipeline {
 
     post {
         always {
-            echo 'Building multibranch pipeline for votte is completed..'
+            echo 'Building multibranch pipeline for vote is completed..'
         }
     }
 }
