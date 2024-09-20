@@ -1,15 +1,16 @@
 pipeline {
-    agent {
-        docker {
-            image 'python:3.11-slim'
-            args '--user root'
-        }
-    }
+    agent none
 
     stages {
         stage("build") {
             when {
                 changeset "**/vote/**"
+            }
+            agent {
+                docker {
+                    image 'python:2.7.16-slim'
+                    args '--user root'
+                }
             }
             steps {
                 echo 'Compiling vote app..'
@@ -23,22 +24,27 @@ pipeline {
             when {
                 changeset "**/vote/**"
             }
+            agent {
+                docker {
+                    image 'python:2.7.16-slim'
+                    args '--user root'
+                }
+            }
             steps {
                 echo 'Running Unit Tests on vote app.'
                 dir('vote') {
                     sh "pip install -r requirements.txt"
-                    sh "pip install --upgrade nose"
                     sh 'nosetests -v'
                 }
             }
         }
 
         stage('docker-package') {
+            agent any
             when {
                 changeset "**/vote/**"
                 branch 'master'
             }
-            agent any
             steps {
                 echo 'Packaging vote app with docker'
                 script {
@@ -55,7 +61,7 @@ pipeline {
 
     post {
         always {
-            echo 'Building multibranch pipeline for worker is completed..'
+            echo 'Building multibranch pipeline for vote is completed..'
         }
     }
 }
